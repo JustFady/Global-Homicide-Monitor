@@ -57,13 +57,13 @@ function interpolateFrame(current, next, alpha) {
 
   return {
     ...current,
-    liquidity_density_factor: lerp(current.liquidity_density_factor, next.liquidity_density_factor, alpha),
-    gamma_metabolism_factor: lerp(current.gamma_metabolism_factor, next.gamma_metabolism_factor, alpha),
-    manipulation_factor: lerp(current.manipulation_factor, next.manipulation_factor, alpha),
-    price_kinetic_factor: lerp(current.price_kinetic_factor, next.price_kinetic_factor, alpha),
-    health_score: lerp(current.health_score, next.health_score, alpha),
-    side_imbalance: lerp(current.side_imbalance, next.side_imbalance, alpha),
-    order_density: lerp(current.order_density, next.order_density, alpha),
+    liquidity_density_factor: lerp(current.liquidity_density_factor || 0, next.liquidity_density_factor || 0, alpha),
+    gamma_metabolism_factor: lerp(current.gamma_metabolism_factor || 0, next.gamma_metabolism_factor || 0, alpha),
+    manipulation_factor: lerp(current.manipulation_factor || 0, next.manipulation_factor || 0, alpha),
+    price_kinetic_factor: lerp(current.price_kinetic_factor || 0, next.price_kinetic_factor || 0, alpha),
+    health_score: lerp(current.health_score || 0, next.health_score || 0, alpha),
+    side_imbalance: lerp(current.side_imbalance || 0, next.side_imbalance || 0, alpha),
+    order_density: lerp(current.order_density || 0, next.order_density || 0, alpha),
     ask_flow: lerpArray(current.ask_flow, next.ask_flow, alpha),
     bid_flow: lerpArray(current.bid_flow, next.bid_flow, alpha),
   };
@@ -171,8 +171,8 @@ function buildSeries(frame, strikeMin, strikeMax) {
       askNorm,
       bidNorm,
       volatilityNorm,
-      pressureY: 620 - pressureNorm * 320 - frame.order_density * 36,
-      volatilityY: 600 - volatilityNorm * 260 - frame.manipulation_factor * 18,
+      pressureY: 620 - pressureNorm * 320 - (frame.order_density || 0) * 36,
+      volatilityY: 600 - volatilityNorm * 260 - (frame.manipulation_factor || 0) * 18,
       askY: 605 - askNorm * 190,
       bidY: 605 - bidNorm * 190,
       ask: entry.ask,
@@ -683,20 +683,21 @@ function App() {
 
   return (
     <main className="app-shell">
-      <section className="hero-copy">
-        <div className="hero-topline">
-          <p className="eyebrow">Market Pressure Map</p>
-          <span className={`demo-pill ${demoMode ? 'demo-pill-live' : ''}`}>{demoMode ? 'Story mode' : 'Explore mode'}</span>
+      {/* Slim header bar */}
+      <header className="hero-bar">
+        <div className="hero-bar-left">
+          <h1 className="hero-bar-title">Market Pressure Map</h1>
+          <span className={`demo-pill ${demoMode ? 'demo-pill-live' : ''}`}>
+            {demoMode ? 'Story mode' : 'Explore mode'}
+          </span>
         </div>
-        <h1 className="hero-title">Pressure, liquidity, volatility, and price context on one screen.</h1>
-        <p className="hero-text">
-          Blue is pressure, orange is volatility, blue dots are bid liquidity, and gold dots are ask liquidity.
-          Time lives in the mini timeline below. Click directly on the chart if you want an explanation pinned in place.
-        </p>
-      </section>
+        <p className="hero-bar-sub">Pressure · Liquidity · Volatility · Price</p>
+      </header>
 
       <section className="stage-panel">
         <div className="stage-workspace">
+
+          {/* Full-width chart column */}
           <div className="chart-column">
             <div className="stage-header stage-header-inline">
               <div>
@@ -746,48 +747,67 @@ function App() {
           </div>
 
           <aside className="insight-rail" aria-label="Current frame insights">
+
+            {/* Card 1: Current frame + timestamp */}
             <div className="rail-section rail-section-highlight">
               <p className="panel-kicker">Current frame</p>
               <h2 className="rail-title">{formatTimestamp(frame.timestamp)}</h2>
-              <p className="detail-copy">
-                Hover the graph to inspect a lane. The strongest lane and any active alerts are summarized here.
-              </p>
-            </div>
-
-            <div className="metric-grid metric-grid-rail">
-              <MetricCard label="Health" value={frame.health_score.toFixed(2)} hint="overall condition" />
-              <MetricCard label="Bias" value={balance} hint="dominant side" />
-              <MetricCard label="Liquidity" value={formatPercent(frame.liquidity_density_factor)} hint="visible depth" />
-              <MetricCard label="Volatility" value={formatPercent(frame.manipulation_factor)} hint="instability level" />
-            </div>
-
-            <div className="price-strip price-strip-rail">
-              <div className="price-box">
-                <p className="panel-kicker">Price now</p>
-                <p className="price-value">{frameStats.currentPrice.toFixed(1)}</p>
-              </div>
-              <div className="price-box">
-                <p className="panel-kicker">Change</p>
-                <p className={`price-value ${priceChange >= 0 ? 'price-up' : 'price-down'}`}>{priceChange >= 0 ? '+' : ''}{priceChange.toFixed(1)}</p>
-              </div>
-              <div className="price-box">
-                <p className="panel-kicker">Spread</p>
-                <p className="price-value">{frameStats.spread.toFixed(1)}</p>
+              <div className="rail-mini-stats">
+                <div className="rail-stat">
+                  <p className="panel-kicker">Health</p>
+                  <p className="rail-stat-value">{frame.health_score.toFixed(2)}</p>
+                </div>
+                <div className="rail-stat">
+                  <p className="panel-kicker">Bias</p>
+                  <p className="rail-stat-value">{balance}</p>
+                </div>
               </div>
             </div>
 
-            <div className="panel-section panel-section-tight">
+            {/* Card 2: Metrics + Price */}
+            <div className="rail-section">
+              <p className="panel-kicker">Metrics</p>
+              <div className="metric-grid-rail" style={{marginTop:'0.45rem'}}>
+                <div className="metric-card">
+                  <p className="metric-label">Liquidity</p>
+                  <p className="metric-value">{formatPercent(frame.liquidity_density_factor)}</p>
+                </div>
+                <div className="metric-card">
+                  <p className="metric-label">Volatility</p>
+                  <p className="metric-value">{formatPercent(frame.manipulation_factor)}</p>
+                </div>
+              </div>
+              <div className="price-strip-rail">
+                <div className="price-box">
+                  <p className="panel-kicker">Price</p>
+                  <p className="price-value">{frameStats.currentPrice.toFixed(1)}</p>
+                </div>
+                <div className="price-box">
+                  <p className="panel-kicker">Change</p>
+                  <p className={`price-value ${priceChange >= 0 ? 'price-up' : 'price-down'}`}>{priceChange >= 0 ? '+' : ''}{priceChange.toFixed(1)}</p>
+                </div>
+                <div className="price-box">
+                  <p className="panel-kicker">Spread</p>
+                  <p className="price-value">{frameStats.spread.toFixed(1)}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 3: Strongest lane */}
+            <div className="rail-section">
               <p className="panel-kicker">Strongest lane</p>
-              <h2 className="detail-title">Lane {frameStats.strongest.index + 1} at strike {frameStats.strongest.strike}</h2>
-              <p className="detail-copy">
-                Highest combined pressure in the current frame. It is marked directly on the chart for fast scanning.
+              <h2 className="detail-title">Lane {frameStats.strongest.index + 1}</h2>
+              <p className="detail-copy">Strike {frameStats.strongest.strike}</p>
+              <p className="detail-copy" style={{marginTop:'0.35rem'}}>
+                Highest combined pressure. Marked on chart with a gold ring.
               </p>
             </div>
 
-            <div className="panel-section panel-section-tight">
+            {/* Card 4: Events */}
+            <div className="rail-section">
               <div className="panel-head">
                 <p className="panel-kicker">Event markers</p>
-                <span className="timeline-caption">frame-derived alerts</span>
+                <span className="timeline-caption">alerts</span>
               </div>
               <div className="event-list event-list-rail">
                 {events.length ? events.map((event) => (
@@ -797,12 +817,13 @@ function App() {
                   </div>
                 )) : (
                   <div className="event-chip event-chip-muted">
-                    <p className="event-chip-label">No major event</p>
-                    <p className="event-chip-detail">This frame is not crossing any alert thresholds.</p>
+                    <p className="event-chip-label">No major events</p>
+                    <p className="event-chip-detail">Below alert thresholds.</p>
                   </div>
                 )}
               </div>
             </div>
+
           </aside>
         </div>
 
@@ -812,22 +833,6 @@ function App() {
               <label className="timeline-label" htmlFor="timeline">Replay timeline</label>
               <span className="timeline-caption">{formatTimestamp(frame.timestamp)}</span>
             </div>
-            <input
-              id="timeline"
-              type="range"
-              min={0}
-              max={maxPlayhead}
-              step={0.001}
-              value={playhead}
-              onChange={(event) => {
-                setPlayhead(Number(event.target.value));
-                setIsPlaying(false);
-                setDemoMode(false);
-                setFocusedKey('');
-                setPinnedInfo('');
-                setActivePoint(null);
-              }}
-            />
             <MiniTimeline
               frames={frames}
               playhead={playhead}
