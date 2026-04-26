@@ -69,7 +69,7 @@ export default function LoadingScreen({ visible }) {
 
       {/* Title */}
       <h1 className="text-2xl font-bold text-white/90 mb-1 tracking-tight">
-        Global Gun Violence
+        Global Homicide Monitor
       </h1>
       <p className="text-xs text-accent/70 font-medium uppercase tracking-[0.2em] mb-10">
         Interactive Dashboard
