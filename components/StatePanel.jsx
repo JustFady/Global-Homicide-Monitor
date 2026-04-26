@@ -31,7 +31,7 @@ export default function StatePanel({ stateData, citiesForState, activeYear, onBa
   };
 
   return (
-    <div className="glass-strong h-full rounded-2xl flex flex-col shadow-2xl overflow-hidden animate-slide-in-right relative">
+    <div className="h-full flex flex-col overflow-hidden relative">
       {/* Header */}
       <div className="p-5 border-b border-white/5 relative shrink-0">
         <div className="flex items-start justify-between gap-3">
@@ -53,14 +53,9 @@ export default function StatePanel({ stateData, citiesForState, activeYear, onBa
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={onPin} className="p-2 glass rounded-xl hover:bg-white/10 transition-colors group cursor-pointer" title="Pin to Compare">
+            <button onClick={onPin} className="p-2 rounded-xl bg-white/[0.03] hover:bg-white/10 transition-colors group cursor-pointer" title="Pin to Compare">
               <svg className="w-4 h-4 text-slate-300 group-hover:text-accent group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-              </svg>
-            </button>
-            <button onClick={onClosePanel} className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition flex items-center justify-center" title="Close">
-              <svg className="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" />
               </svg>
             </button>
           </div>

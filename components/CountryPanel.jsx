@@ -72,7 +72,7 @@ export default function CountryPanel({
   );
 
   return (
-    <div className="h-full w-full rounded-2xl glass shadow-glow overflow-hidden flex flex-col animate-slide-in-right">
+    <div className="h-full w-full overflow-hidden flex flex-col">
       {/* Header */}
       <div className="p-4 border-b border-white/[0.06] flex-shrink-0">
         <div className="flex items-start justify-between gap-3">
@@ -88,15 +88,6 @@ export default function CountryPanel({
               <span className={`w-1.5 h-1.5 rounded-full ${strict.dot}`} />
               {strict.label}
             </div>
-            <button
-              onClick={onClosePanel}
-              className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition flex items-center justify-center"
-              title="Close"
-            >
-              <svg className="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" />
-              </svg>
-            </button>
           </div>
         </div>
       </div>
