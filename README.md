@@ -2,7 +2,7 @@
 
 A high-end, interactive analytical dashboard for visualizing global homicide rates, firearm violence, and safety statistics across 176 countries and 960+ cities.
 
-[Live Demo](https://JustFady.github.io/Global-Homicide-Monitor/)
+Live Demo : https://JustFady.github.io/Global-Homicide-Monitor/
 
 ## Features
 - **3D Globe Visualization**: Interactive world map with proportional, severity-colored city markers.
