@@ -1,21 +1,13 @@
 import React, { useState } from "react";
 import LawCard from "./LawCard.jsx";
 
-export default function StatePanel({ stateData, citiesForState, onPin, onViewCity, onClosePanel, activeYear }) {
+export default function StatePanel({ stateData, citiesForState, onPin, onViewCity, onClosePanel }) {
   const [showCities, setShowCities] = useState(false);
 
   if (!stateData) return null;
 
-  // Apply historical multiplier if activeYear is provided
-  const getVal = (base) => {
-    if (!activeYear || activeYear === 2024) return base;
-    const diff = 2024 - activeYear;
-    // Simple historical mock curve: it was slightly higher in the past
-    return parseFloat((base * (1 + diff * 0.015)).toFixed(1));
-  };
-
-  const homRate = getVal(stateData.homicideRatePer100k);
-  const faRate = getVal(stateData.firearmHomicideRate);
+  const homRate = stateData.homicideRatePer100k;
+  const faRate = stateData.firearmHomicideRate;
 
   const getSeverityColor = (rate) => {
     if (rate < 2.5) return "text-safe";
@@ -94,12 +86,12 @@ export default function StatePanel({ stateData, citiesForState, onPin, onViewCit
             </button>
             <div className="space-y-2">
               {citiesForState.map((ct) => {
-                const ctH = getVal(ct.homicideRatePer100k);
+                const ctH = ct.homicideRatePer100k;
                 return (
                   <button key={ct.id} onClick={() => onViewCity(ct.id)} className="w-full text-left p-3 rounded-xl bg-slate-900/40 border border-white/5 hover:border-accent/30 hover:bg-accent/5 transition-all flex items-center justify-between group">
                     <div>
                       <h4 className="text-sm font-semibold text-white">{ct.name}</h4>
-                      <p className="text-[10px] text-slate-400 mt-0.5">{getVal(ct.homicideRatePer100k)} avg / 100k</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">{ct.homicideRatePer100k} avg / 100k</p>
                     </div>
                     <svg className="w-4 h-4 text-slate-500 group-hover:text-accent transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />

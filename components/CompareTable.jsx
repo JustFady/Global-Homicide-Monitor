@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip, Legend } from "recharts";
 
 const metrics = [
   { key: "homicideRatePer100k", label: "Homicide rate (/100k)", fmt: (v) => `${Number(v).toFixed(1)}` },
@@ -68,6 +69,23 @@ export default function CompareTable({ pinned, countries, cities, onClose }) {
     return cols;
   }, [columnData, sortKey, sortDir]);
 
+  const radarData = useMemo(() => {
+    return metrics.map(m => {
+      const range = allCountryRanges[m.key];
+      const item = { subject: m.label.replace(' (/100k)', '').replace('%', '') };
+      sortedColumns.forEach(col => {
+        const val = Number(col.data?.[m.key] ?? 0);
+        let normalized = range.max === range.min ? 0 : ((val - range.min) / (range.max - range.min)) * 100;
+        normalized = Math.max(0, Math.min(100, normalized));
+        item[col.label] = normalized;
+        item[`${col.label}_raw`] = m.fmt(val);
+      });
+      return item;
+    });
+  }, [sortedColumns, allCountryRanges]);
+
+  const radarColors = ['#3b82f6', '#10b981', '#f59e0b', '#f43f5e', '#8b5cf6'];
+
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm p-4 flex items-center justify-center animate-fade-in">
       <div className="w-full max-w-5xl glass-strong rounded-2xl shadow-glow-strong overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
@@ -102,56 +120,92 @@ export default function CompareTable({ pinned, countries, cities, onClose }) {
           </div>
         </div>
 
-        {/* Table */}
-        <div className="p-4 overflow-auto flex-1">
-          {sortedColumns.length < 2 ? (
-            <div className="text-sm text-slate-400 text-center py-8">Pin at least 2 locations to compare.</div>
-          ) : (
-            <table className="w-full border-collapse min-w-[600px]">
-              <thead>
-                <tr>
-                  <th className="text-left text-[11px] font-medium text-slate-500 uppercase tracking-wider p-3 border-b border-white/[0.06] w-[200px]">
-                    Metric
-                  </th>
-                  {sortedColumns.map((c) => (
-                    <th key={`${c.type}:${c.id}`} className="text-left text-xs font-semibold text-slate-200 p-3 border-b border-white/[0.06]">
-                      {c.label}
+        {/* Table & Radar Split */}
+        <div className="flex gap-4 p-4 overflow-hidden flex-1 flex-col md:flex-row">
+          <div className="flex-1 overflow-auto bg-white/[0.02] border border-white/5 rounded-xl">
+            {sortedColumns.length < 2 ? (
+              <div className="text-sm text-slate-400 text-center py-8">Pin at least 2 locations to compare.</div>
+            ) : (
+              <table className="w-full border-collapse min-w-[600px]">
+                <thead>
+                  <tr>
+                    <th className="text-left text-[11px] font-medium text-slate-500 uppercase tracking-wider p-3 border-b border-white/[0.06] w-[200px]">
+                      Metric
                     </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {metrics.map((m) => (
-                  <tr key={m.key} className="group">
-                    <td className="p-3 border-b border-white/[0.03] text-xs font-medium text-slate-400">
-                      {m.label}
-                    </td>
-                    {sortedColumns.map((col) => {
-                      const value = col.data?.[m.key];
-                      const range = allCountryRanges[m.key];
-                      const bg = cellBg(value, range);
-                      return (
-                        <td key={`${m.key}:${col.id}`} className="p-2 border-b border-white/[0.03]">
-                          <div className="rounded-lg px-3 py-2" style={{ background: bg }}>
-                            <span className="text-sm font-semibold text-slate-100">{m.fmt(value)}</span>
-                          </div>
-                        </td>
-                      );
-                    })}
+                    {sortedColumns.map((c) => (
+                      <th key={`${c.type}:${c.id}`} className="text-left text-xs font-semibold text-slate-200 p-3 border-b border-white/[0.06]">
+                        {c.label}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-                <tr>
-                  <td className="p-3 border-b border-white/[0.03] text-xs font-medium text-slate-400">Violence type</td>
-                  {sortedColumns.map((col) => (
-                    <td key={`v:${col.id}`} className="p-2 border-b border-white/[0.03]">
-                      <div className="rounded-lg bg-white/[0.03] px-3 py-2 text-xs text-slate-300">
-                        {col.data?.primaryViolenceType ?? "—"}
-                      </div>
-                    </td>
+                </thead>
+                <tbody>
+                  {metrics.map((m) => (
+                    <tr key={m.key} className="group hover:bg-white/[0.02] transition-colors">
+                      <td className="p-3 border-b border-white/[0.03] text-xs font-medium text-slate-400">
+                        {m.label}
+                      </td>
+                      {sortedColumns.map((col) => {
+                        const value = col.data?.[m.key];
+                        const range = allCountryRanges[m.key];
+                        const bg = cellBg(value, range);
+                        return (
+                          <td key={`${m.key}:${col.id}`} className="p-2 border-b border-white/[0.03]">
+                            <div className="rounded-lg px-3 py-2" style={{ background: bg }}>
+                              <span className="text-sm font-semibold text-slate-100">{m.fmt(value)}</span>
+                            </div>
+                          </td>
+                        );
+                      })}
+                    </tr>
                   ))}
-                </tr>
-              </tbody>
-            </table>
+                  <tr>
+                    <td className="p-3 border-b border-white/[0.03] text-xs font-medium text-slate-400">Violence type</td>
+                    {sortedColumns.map((col) => (
+                      <td key={`v:${col.id}`} className="p-2 border-b border-white/[0.03]">
+                        <div className="rounded-lg bg-white/[0.03] px-3 py-2 text-xs text-slate-300">
+                          {col.data?.primaryViolenceType ?? "—"}
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          {/* Radar Chart */}
+          {sortedColumns.length >= 2 && (
+            <div className="w-full md:w-[350px] lg:w-[450px] flex-shrink-0 bg-white/[0.02] border border-white/5 rounded-xl p-4 flex flex-col">
+              <h3 className="text-sm font-semibold text-slate-200 mb-2">Normalized Risk Profile</h3>
+              <p className="text-[10px] text-slate-400 mb-4">Values are normalized (0-100) relative to global extremes.</p>
+              <div className="flex-1 min-h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart cx="50%" cy="50%" outerRadius="65%" data={radarData}>
+                    <PolarGrid stroke="rgba(255,255,255,0.1)" />
+                    <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 10 }} />
+                    <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+                    <Tooltip 
+                      contentStyle={{ background: "rgba(6,10,20,0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px" }}
+                      itemStyle={{ fontSize: 12 }}
+                      labelStyle={{ color: '#e2e8f0', marginBottom: '4px', fontSize: 13, fontWeight: 'bold' }}
+                      formatter={(val, name, props) => [props.payload[`${name}_raw`], name]}
+                    />
+                    <Legend wrapperStyle={{ fontSize: 11, paddingTop: '20px' }} />
+                    {sortedColumns.map((col, i) => (
+                      <Radar 
+                        key={col.id} 
+                        name={col.label} 
+                        dataKey={col.label} 
+                        stroke={radarColors[i % radarColors.length]} 
+                        fill={radarColors[i % radarColors.length]} 
+                        fillOpacity={0.25} 
+                      />
+                    ))}
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           )}
         </div>
       </div>

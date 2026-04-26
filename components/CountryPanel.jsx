@@ -26,7 +26,6 @@ export default function CountryPanel({
   country,
   citiesForCountry,
   globalAvgKeyMetrics,
-  activeYear,
   onPin,
   onViewCity,
   onClosePanel,
@@ -34,25 +33,18 @@ export default function CountryPanel({
   const strict = strictnessStyles(country.lawStrictness);
   const [showCities, setShowCities] = useState(false);
 
-  // Apply historical multiplier if activeYear is provided
-  const getVal = (base) => {
-    if (!activeYear || activeYear === 2024 || typeof base !== 'number') return base;
-    const diff = 2024 - activeYear;
-    return parseFloat((base * (1 + diff * 0.015)).toFixed(1));
-  };
-
   const stats = useMemo(
     () => [
-      { label: "Homicide rate", value: `${getVal(country.homicideRatePer100k)} / 100k` },
-      { label: "Firearm homicide", value: `${getVal(country.firearmHomicideRate)} / 100k` },
-      { label: "Crime index", value: `${getVal(country.organizedCrimeIndex)}` },
+      { label: "Homicide rate", value: `${country.homicideRatePer100k} / 100k` },
+      { label: "Firearm homicide", value: `${country.firearmHomicideRate} / 100k` },
+      { label: "Crime index", value: `${country.organizedCrimeIndex}` },
       { label: "Violence type", value: country.primaryViolenceType },
       { label: "Under 25", value: `${country.underAge25Percent.toFixed(0)}%` },
       { label: "Death risk (owner)", value: likelihoodToPercent(country.likelihoodDeathIfOwner) },
       { label: "Incarceration risk", value: likelihoodToPercent(country.likelihoodIncarcerationIfOwner) },
       { label: "Gang-related", value: `${country.gangRelatedGunDeathsPercent ?? 0}%` },
     ],
-    [country, activeYear]
+    [country]
   );
 
   const chartData = useMemo(

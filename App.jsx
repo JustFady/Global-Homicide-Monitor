@@ -10,7 +10,6 @@ import ChartPanel from "./components/ChartPanel.jsx";
 import LoadingScreen from "./components/LoadingScreen.jsx";
 import TopNav from "./components/TopNav.jsx";
 import StatePanel from "./components/StatePanel.jsx";
-import TimeScrubber from "./components/TimeScrubber.jsx";
 
 import countries from "./data/countries.json";
 import cities from "./data/cities.json";
@@ -21,19 +20,7 @@ function clampPins(items, max = 4) {
   return items.length <= max ? items : items.slice(0, max);
 }
 
-function deriveScenarioMatches(allCountries, filters) {
-  const { gangRelatedOver60, under25Predominant, deathIfOwnerOver5, permissiveOnly, organizedCrimeOver6 } = filters;
-  return allCountries
-    .filter((c) => {
-      if (gangRelatedOver60 && (c.gangRelatedGunDeathsPercent ?? 0) <= 60) return false;
-      if (under25Predominant && (c.underAge25Percent ?? 0) <= 60) return false;
-      if (deathIfOwnerOver5 && (c.likelihoodDeathIfOwner ?? 0) <= 0.05) return false;
-      if (permissiveOnly && (c.lawStrictness ?? "").toLowerCase() !== "permissive") return false;
-      if (organizedCrimeOver6 && (c.organizedCrimeIndex ?? 0) <= 6) return false;
-      return true;
-    })
-    .map((c) => c.id);
-}
+// Replaced with narrative lenses inline
 
 /* ── Toast component ──────────────────────────────────── */
 function Toast({ message, onDone }) {
@@ -65,7 +52,6 @@ export default function App() {
   
   // New Interactions
   const [dataLens, setDataLens] = useState("none");
-  const [activeYear, setActiveYear] = useState(2024);
   const [isTouring, setIsTouring] = useState(false);
 
   // UI state
@@ -226,7 +212,6 @@ export default function App() {
           scenarioCountryIds={scenarioCountryIds}
           citiesVisible={!!selectedCountryId}
           dataLens={dataLens}
-          activeYear={activeYear}
           onSelectCountry={(countryId) => handleSelectLocation({ type: "country", countryId })}
           onSelectState={(stateId) => {
             setSelectedCountryId('USA');
@@ -259,7 +244,7 @@ export default function App() {
       </TopNav>
 
       {/* ── z-20: Sidebar panel ────────────────────────── */}
-      <div className="absolute top-20 right-4 bottom-24 w-full max-w-sm z-20 pointer-events-none">
+      <div className="absolute top-[80px] right-6 bottom-[100px] w-full max-w-[360px] z-20 pointer-events-none flex flex-col">
         <div
           className={`h-full pointer-events-auto transition-all duration-300 ease-out ${
             sidebarOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8 pointer-events-none"
@@ -283,7 +268,6 @@ export default function App() {
             <StatePanel
               stateData={selectedState}
               citiesForState={citiesForSelectedCountry}
-              activeYear={activeYear}
               onPin={() =>
                 pinToCompare({
                   type: "state",
@@ -299,7 +283,6 @@ export default function App() {
               country={selectedCountry}
               citiesForCountry={citiesForSelectedCountry}
               globalAvgKeyMetrics={globalAvgKeyMetrics}
-              activeYear={activeYear}
               onPin={() =>
                 pinToCompare({
                   type: "country",
@@ -330,9 +313,6 @@ export default function App() {
       {/* ── z-30: CompareBar ───────────────────────────── */}
       <div className="absolute bottom-6 w-full z-30 pointer-events-none">
         <div className="pointer-events-auto">
-          {!chartsOpen && !scenarioOpen && (
-             <TimeScrubber activeYear={activeYear} onSetYear={setActiveYear} />
-          )}
           <CompareBar
             pinned={pinned}
             onRemove={(i) => setPinned((prev) => prev.filter((_, idx) => idx !== i))}
@@ -370,10 +350,9 @@ export default function App() {
 
       <ScenarioExplorer
         open={scenarioOpen}
-        onOpen={() => setScenarioOpen(true)}
         onClose={() => setScenarioOpen(false)}
-        filters={scenarioFilters}
-        onChange={setScenarioFilters}
+        activeScenario={activeScenario}
+        onChange={setActiveScenario}
         countries={countries}
         scenarioCountryIds={scenarioCountryIds}
         onPin={(countryId) => {

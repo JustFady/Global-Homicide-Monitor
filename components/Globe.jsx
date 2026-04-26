@@ -120,7 +120,6 @@ export default function Globe({
   scenarioCountryIds,
   citiesVisible,
   dataLens,
-  activeYear,
   onSelectCountry,
   onSelectState,
   onSelectCity,
