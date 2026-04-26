@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import LawCard from "./LawCard.jsx";
+import { useAnimatedNumber } from "../hooks/useAnimatedNumber.js";
 
 // Historical multiplier for timeline
 function getVal(base, activeYear) {
@@ -15,6 +16,21 @@ function strictnessStyles(strictness) {
   return { label: "Permissive", cls: "bg-rose-500/15 text-rose-200 border-rose-500/20", dot: "bg-rose-400" };
 }
 
+function SeverityStat({ label, value, severity, gradientFrom }) {
+  const animated = useAnimatedNumber(value, 700, 1);
+  const borderCls = severity === "danger" ? "border-rose-500/20" : severity === "warn" ? "border-amber-500/20" : severity === "safe" ? "border-emerald-500/20" : "border-white/5";
+  const textCls = severity === "danger" ? "text-rose-300" : severity === "warn" ? "text-amber-300" : severity === "safe" ? "text-emerald-300" : "text-white";
+  return (
+    <div className={`rounded-xl p-4 border relative overflow-hidden group transition-all duration-300 hover:brightness-125 ${borderCls}`} style={{background: 'rgba(15,23,42,0.5)'}}>
+      <div className={`absolute inset-0 bg-gradient-to-br ${gradientFrom} to-transparent opacity-0 group-hover:opacity-100 transition-opacity`} />
+      <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mb-1 relative z-10">{label}</p>
+      <div className="flex items-baseline gap-1 relative z-10">
+        <span className={`text-2xl font-bold tracking-tight tabular-nums ${textCls}`}>{animated}</span>
+      </div>
+    </div>
+  );
+}
+
 export default function StatePanel({ stateData, citiesForState, activeYear, onBack, onPin, onViewCity, onClosePanel }) {
   const [showCities, setShowCities] = useState(false);
 
@@ -22,13 +38,14 @@ export default function StatePanel({ stateData, citiesForState, activeYear, onBa
 
   const homRate = getVal(stateData.homicideRatePer100k, activeYear);
   const faRate = getVal(stateData.firearmHomicideRate, activeYear);
+  const crimeIdx = getVal(stateData.organizedCrimeIndex, activeYear);
+  const under25 = stateData.underAge25Percent ?? 30;
   const strict = strictnessStyles(stateData.lawStrictness);
 
-  const getSeverityColor = (rate) => {
-    if (rate < 2.5) return "text-safe";
-    if (rate < 5) return "text-warn";
-    return "text-danger";
-  };
+  const homSev = homRate > 5 ? "danger" : homRate > 2 ? "warn" : "safe";
+  const fireSev = faRate > 3 ? "danger" : faRate > 1 ? "warn" : "safe";
+  const crimeSev = crimeIdx > 5 ? "danger" : crimeIdx > 3 ? "warn" : "safe";
+  const youthSev = under25 > 50 ? "danger" : under25 > 30 ? "warn" : "safe";
 
   return (
     <div className="h-full flex flex-col overflow-hidden relative">
@@ -67,38 +84,12 @@ export default function StatePanel({ stateData, citiesForState, activeYear, onBa
         {/* Context */}
         <p className="text-sm text-slate-300 leading-relaxed border-l-2 border-accent/40 pl-3 italic">"{stateData.context}"</p>
 
-        {/* Stats */}
+        {/* Stats with severity */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"/>
-            <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mb-1">Homicides</p>
-            <div className="flex items-baseline gap-1">
-              <span className={`text-2xl font-bold tracking-tight ${getSeverityColor(homRate)}`}>{homRate}</span>
-              <span className="text-[10px] text-slate-500 font-medium">/ 100k</span>
-            </div>
-          </div>
-          <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"/>
-            <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mb-1">Firearm Related</p>
-            <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-white tracking-tight">{faRate}</span>
-              <span className="text-[10px] text-slate-500 font-medium">/ 100k</span>
-            </div>
-          </div>
-          <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"/>
-            <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mb-1">Crime Index</p>
-            <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-white tracking-tight">{getVal(stateData.organizedCrimeIndex, activeYear)}</span>
-            </div>
-          </div>
-          <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"/>
-            <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mb-1">Under 25</p>
-            <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-white tracking-tight">{stateData.underAge25Percent}%</span>
-            </div>
-          </div>
+          <SeverityStat label="Homicides" value={homRate} severity={homSev} gradientFrom="from-red-500/5" />
+          <SeverityStat label="Firearm Related" value={faRate} severity={fireSev} gradientFrom="from-orange-500/5" />
+          <SeverityStat label="Crime Index" value={crimeIdx} severity={crimeSev} gradientFrom="from-blue-500/5" />
+          <SeverityStat label="Under 25" value={under25} severity={youthSev} gradientFrom="from-purple-500/5" />
         </div>
 
         <LawCard lawSummary={stateData.lawSummary} severity={stateData.lawStrictness} />
@@ -130,23 +121,27 @@ export default function StatePanel({ stateData, citiesForState, activeYear, onBa
               style={{ maxHeight: showCities ? `${citiesForState.length * 70 + 16}px` : "0px", opacity: showCities ? 1 : 0 }}
             >
               <div className="px-3 pb-3 space-y-2 max-h-[300px] overflow-y-auto">
-                {citiesForState.map((ct) => (
-                  <button
-                    key={ct.id}
-                    onClick={() => onViewCity(ct.id)}
-                    className="w-full text-left p-3 rounded-xl bg-slate-900/40 border border-white/5 hover:border-accent/30 hover:bg-accent/5 transition-all flex items-center justify-between group"
-                  >
-                    <div>
-                      <h4 className="text-sm font-semibold text-white">{ct.name}</h4>
-                      <p className="text-[10px] text-slate-400 mt-0.5">
-                        {getVal(ct.homicideRatePer100k, activeYear)} / 100k · {ct.primaryViolenceType}
-                      </p>
-                    </div>
-                    <svg className="w-4 h-4 text-slate-500 group-hover:text-accent transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                ))}
+                {citiesForState.map((ct) => {
+                  const ctHom = getVal(ct.homicideRatePer100k, activeYear);
+                  const ctSev = ctHom > 10 ? "text-rose-400" : ctHom > 5 ? "text-amber-400" : "text-emerald-400";
+                  return (
+                    <button
+                      key={ct.id}
+                      onClick={() => onViewCity(ct.id)}
+                      className="w-full text-left p-3 rounded-xl bg-slate-900/40 border border-white/5 hover:border-accent/30 hover:bg-accent/5 transition-all flex items-center justify-between group"
+                    >
+                      <div>
+                        <h4 className="text-sm font-semibold text-white">{ct.name}</h4>
+                        <p className="text-[10px] text-slate-400 mt-0.5">
+                          <span className={`font-semibold ${ctSev}`}>{ctHom}</span> / 100k · {ct.riskContext || ct.primaryViolenceType}
+                        </p>
+                      </div>
+                      <svg className="w-4 h-4 text-slate-500 group-hover:text-accent transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>

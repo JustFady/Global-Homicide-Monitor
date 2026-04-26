@@ -392,6 +392,17 @@ export default function App() {
               </div>
             )}
           </div>
+
+
+          {/* Attribution Footer */}
+          <div className="px-4 py-3 border-t border-white/[0.06] bg-slate-900/50 shrink-0 flex items-center justify-between">
+            <div className="text-[10px] text-slate-500">
+              Data sourced from UNODC & Small Arms Survey
+            </div>
+            <a href="https://github.com/JustFady" target="_blank" rel="noreferrer" className="text-[10px] font-medium text-accent hover:underline">
+              v1.0.0
+            </a>
+          </div>
         </div>
       )}
 
