@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  base: '/Global-Homicide-Monitor/',
+  base: '/global-homicide-monitor/',
   plugins: [react()],
   root: '.',
 });
