@@ -238,7 +238,7 @@ export default function App() {
         </div>
 
         {/* Top Center: Search Bar */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-auto w-full max-w-[400px] px-4 z-30">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-auto w-full max-w-[500px] px-4 z-30">
           <div className="shadow-glow rounded-xl">
             <SearchBar countries={countries} cities={cities} onSelectLocation={handleSelectLocation} />
           </div>
@@ -361,16 +361,16 @@ export default function App() {
           </div>
         )}
 
-        {/* Bottom Center: Time Scrubber */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-auto w-full max-w-[460px] px-4 z-20">
+        {/* Bottom Left: Time Scrubber */}
+        <div className="absolute bottom-6 left-4 pointer-events-auto w-[340px] z-20">
           <div className="glass-strong rounded-2xl border border-white/[0.08] p-2.5 shadow-glow-strong backdrop-blur-2xl">
             <TimeScrubber activeYear={activeYear} onSetYear={setActiveYear} />
           </div>
         </div>
 
-        {/* Bottom Left: Pinned Items & Compare */}
+        {/* Bottom Left (Above Timeline): Pinned Items & Compare */}
         {pinned.length > 0 && (
-          <div className="absolute bottom-6 left-4 pointer-events-auto w-[340px] z-20">
+          <div className="absolute bottom-[100px] left-4 pointer-events-auto w-[340px] z-20">
             <div className="glass-strong rounded-2xl border border-white/[0.08] p-3 shadow-glow backdrop-blur-2xl">
               <div className="flex items-center justify-between mb-2.5">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { geoCentroid } from "d3-geo";
 
 /* ── helpers ──────────────────────────────────────────── */
 function norm(s) {
@@ -502,21 +503,50 @@ export default function Globe({
       );
     } else if (selectedStateId) {
       // Zoom to state
-      const st = (usStates || []).find(s => s.id === selectedStateId);
-      if (st && st.lat && st.lng) {
+      const feature = usFeatures.find(f => {
+        const fName = getFeatureName(f);
+        return fName && stateByName.get(norm(fName)) === selectedStateId;
+      });
+      if (feature) {
+        const centroid = geoCentroid(feature);
         globeRef.current.pointOfView(
-          { lat: st.lat, lng: st.lng, altitude: 1.0 },
+          { lat: centroid[1], lng: centroid[0], altitude: 1.0 },
+          duration
+        );
+      } else {
+        const st = (usStates || []).find(s => s.id === selectedStateId);
+        if (st && st.lat && st.lng) {
+          globeRef.current.pointOfView(
+            { lat: st.lat, lng: st.lng, altitude: 1.0 },
+            duration
+          );
+        }
+      }
+    } else {
+      // Find the country feature to compute exact centroid
+      const feature = worldFeatures.find(f => {
+        const iso3 = getFeatureISO3(f);
+        const fName = getFeatureName(f);
+        const id = (iso3 && countryIdSet.has(iso3)) ? iso3 : (fName ? countryByName.get(norm(fName)) : null);
+        return id === selectedCountryId;
+      });
+      
+      if (feature) {
+        const centroid = geoCentroid(feature);
+        globeRef.current.pointOfView(
+          { lat: centroid[1], lng: centroid[0], altitude: 2.2 },
+          duration
+        );
+      } else {
+        // Fallback to coordinates in JSON
+        const c = countries.find((x) => x.id === selectedCountryId) ?? countries[0];
+        globeRef.current.pointOfView(
+          { lat: c.lat, lng: c.lng, altitude: 2.2 },
           duration
         );
       }
-    } else {
-      const c = countries.find((x) => x.id === selectedCountryId) ?? countries[0];
-      globeRef.current.pointOfView(
-        { lat: c.lat, lng: c.lng, altitude: 2.2 },
-        duration
-      );
     }
-  }, [selectedCity, selectedStateId, selectedCountryId, countries, usStates]);
+  }, [selectedCity, selectedStateId, selectedCountryId, countries, usStates, worldFeatures, usFeatures, countryByName, stateByName, countryIdSet]);
 
   return <div ref={containerRef} className="w-full h-full" />;
 }
