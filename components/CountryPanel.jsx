@@ -132,7 +132,7 @@ export default function CountryPanel({
           ))}
         </div>
 
-        <LawCard lawSummary={country.lawSummary} />
+
 
         {/* Chart: Country vs Global */}
         <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4">

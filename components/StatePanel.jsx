@@ -92,7 +92,7 @@ export default function StatePanel({ stateData, citiesForState, activeYear, onBa
           <SeverityStat label="Under 25" value={under25} severity={youthSev} gradientFrom="from-purple-500/5" />
         </div>
 
-        <LawCard lawSummary={stateData.lawSummary} severity={stateData.lawStrictness} />
+
 
         {/* Cities section */}
         {citiesForState.length > 0 && (
