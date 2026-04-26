@@ -180,233 +180,241 @@ export default function App() {
   const scenarioIcon = <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
 
   return (
-    <div className="relative h-full overflow-hidden flex">
+    <div className="relative h-full w-full overflow-hidden bg-[#030712] font-sans text-slate-200">
       {loading && (
         <div className="absolute inset-0 z-[100]">
           <LoadingScreen visible={true} />
         </div>
       )}
 
-      {/* ── LEFT: Globe area ───────────────────────────── */}
-      <div className="flex-1 relative min-w-0">
-        {/* Globe */}
-        <div className="absolute inset-0">
-          <Globe
-            countries={countries}
-            cities={cities}
-            usStates={usStatesData}
-            selectedCountryId={selectedCountryId}
-            selectedStateId={selectedStateId}
-            selectedCityId={selectedCityId}
-            scenarioCountryIds={scenarioCountryIds}
-            citiesVisible={!!selectedCountryId}
-            dataLens={dataLens}
-            activeYear={activeYear}
-            onSelectCountry={(countryId) => handleSelectLocation({ type: "country", countryId })}
-            onSelectState={handleSelectState}
-            onSelectCity={(cityId) => {
-              const ct = cities.find((x) => x.id === cityId);
-              if (!ct) return;
-              handleViewCity(cityId);
-            }}
-            onGlobeReady={handleGlobeReady}
-            onCountryNotFound={handleCountryNotFound}
-          />
-        </div>
-
-        {/* Top bar over globe */}
-        <div className="absolute top-0 left-0 right-0 z-10">
-          <div className="glass-strong border-b border-white/[0.06]">
-            <div className="px-4 py-2.5 flex items-center gap-3">
-              {/* Branding */}
-              <div className="flex items-center gap-2.5 shrink-0">
-                <div className="w-9 h-9 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center">
-                  <svg className="w-4.5 h-4.5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div className="hidden lg:block">
-                  <h1 className="text-sm font-bold text-white tracking-tight leading-none">Global Gun Violence</h1>
-                  <p className="text-[9px] text-accent/80 font-medium uppercase tracking-widest mt-0.5">Interactive Dashboard</p>
-                </div>
-              </div>
-              <div className="hidden lg:block w-px h-7 bg-white/[0.08]" />
-              {/* Data Lenses */}
-              <div className="hidden md:flex items-center bg-white/[0.03] p-0.5 rounded-lg border border-white/[0.05]">
-                {[
-                  { id: 'none', label: 'Standard', activeCls: 'bg-white/10 text-white' },
-                  { id: 'homicide', label: 'Homicides', activeCls: 'bg-red-500/20 text-red-400' },
-                  { id: 'crime', label: 'Crime', activeCls: 'bg-amber-500/20 text-amber-400' },
-                  { id: 'law', label: 'Laws', activeCls: 'bg-green-500/20 text-green-400' },
-                ].map(lens => (
-                  <button
-                    key={lens.id}
-                    onClick={() => setDataLens(lens.id)}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors ${
-                      dataLens === lens.id ? lens.activeCls : 'text-slate-500 hover:text-slate-300'
-                    }`}
-                  >
-                    {lens.label}
-                  </button>
-                ))}
-              </div>
-              {/* Search */}
-              <div className="flex-1 max-w-lg mx-2">
-                <SearchBar countries={countries} cities={cities} onSelectLocation={handleSelectLocation} />
-              </div>
-              {/* Sidebar toggle (when closed) */}
-              {!sidebarOpen && (
-                <button
-                  onClick={() => setSidebarOpen(true)}
-                  className="shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-medium bg-accent/10 text-accent border border-accent/20 hover:bg-accent/20 transition flex items-center gap-1.5"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M4 6h16M4 12h16M4 18h7" strokeLinecap="round" /></svg>
-                  Panel
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
+      {/* ── BACKGROUND: Globe ─────────────────────────── */}
+      <div className="absolute inset-0 z-0">
+        <Globe
+          countries={countries}
+          cities={cities}
+          usStates={usStatesData}
+          selectedCountryId={selectedCountryId}
+          selectedStateId={selectedStateId}
+          selectedCityId={selectedCityId}
+          scenarioCountryIds={scenarioCountryIds}
+          citiesVisible={!!selectedCountryId}
+          dataLens={dataLens}
+          activeYear={activeYear}
+          onSelectCountry={(countryId) => handleSelectLocation({ type: "country", countryId })}
+          onSelectState={handleSelectState}
+          onSelectCity={(cityId) => {
+            const ct = cities.find((x) => x.id === cityId);
+            if (!ct) return;
+            handleViewCity(cityId);
+          }}
+          onGlobeReady={handleGlobeReady}
+          onCountryNotFound={handleCountryNotFound}
+        />
       </div>
 
-      {/* ── RIGHT: Unified Sidebar ──────────────────────── */}
-      {sidebarOpen && (
-        <div className="w-[390px] shrink-0 h-full flex flex-col bg-[rgba(6,10,20,0.95)] border-l border-white/[0.06] animate-slide-in-right sidebar-gradient-border">
-          {/* Tab Bar */}
-          <div className="flex shrink-0 border-b border-white/[0.06]">
-            <TabButton active={activeTab === "info"} icon={infoIcon} label="Info" onClick={() => setActiveTab("info")} />
-            <TabButton active={activeTab === "charts"} icon={chartIcon} label="Charts" onClick={() => setActiveTab("charts")} />
-            <TabButton active={activeTab === "scenarios"} icon={scenarioIcon} label="Lenses" onClick={() => setActiveTab("scenarios")} badge={scenarioCountryIds?.length || 0} />
-            {/* Close sidebar */}
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="px-3 flex items-center justify-center text-slate-600 hover:text-slate-300 transition-colors border-l border-white/[0.04]"
-              title="Close panel"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" /></svg>
-            </button>
-          </div>
-
-          {/* Tab Content (scrollable) */}
-          <div className="flex-1 overflow-y-auto min-h-0">
-            {activeTab === "info" && (
-              <>
-                <Breadcrumb
-                  country={selectedCountry}
-                  state={selectedState}
-                  city={selectedCity}
-                  onSelectCountry={(id) => { setSelectedStateId(null); setSelectedCityId(null); setSelectedCountryId(id); }}
-                  onSelectState={(id) => { setSelectedCityId(null); setSelectedStateId(id); }}
-                />
-                {selectedCity ? (
-                  <CityPanel
-                    city={selectedCity}
-                    country={selectedCountry}
-                    state={selectedState}
-                    activeYear={activeYear}
-                    onDismiss={() => setSelectedCityId(null)}
-                    onPin={() => pinToCompare({ type: "city", id: selectedCity.id, label: `${selectedCity.name} (${selectedCountry.name})` })}
-                    onClosePanel={() => setSidebarOpen(false)}
-                  />
-                ) : selectedStateId ? (
-                  <StatePanel
-                    stateData={selectedState}
-                    citiesForState={citiesForContext}
-                    activeYear={activeYear}
-                    onBack={() => { setSelectedStateId(null); setSelectedCityId(null); }}
-                    onPin={() => pinToCompare({ type: "state", id: selectedState.id, label: selectedState.name })}
-                    onViewCity={handleViewCity}
-                    onClosePanel={() => setSidebarOpen(false)}
-                  />
-                ) : (
-                  <CountryPanel
-                    country={selectedCountry}
-                    citiesForCountry={citiesForContext}
-                    statesForCountry={statesForCountry}
-                    globalAvgKeyMetrics={globalAvgKeyMetrics}
-                    activeYear={activeYear}
-                    onPin={() => pinToCompare({ type: "country", id: selectedCountry.id, label: selectedCountry.name })}
-                    onViewCity={handleViewCity}
-                    onSelectState={handleSelectState}
-                    onClosePanel={() => setSidebarOpen(false)}
-                  />
-                )}
-              </>
-            )}
-
-            {activeTab === "charts" && (
-              <ChartPanel
-                countries={countries}
-                cities={cities}
-                onPin={(countryId) => {
-                  const c = countries.find((x) => x.id === countryId);
-                  if (!c) return;
-                  pinToCompare({ type: "country", id: c.id, label: c.name });
-                }}
-                inline
-              />
-            )}
-
-            {activeTab === "scenarios" && (
-              <ScenarioExplorer
-                activeScenario={activeScenario}
-                onChange={setActiveScenario}
-                countries={countries}
-                scenarioCountryIds={scenarioCountryIds}
-                onPin={(countryId) => {
-                  const c = countries.find((x) => x.id === countryId);
-                  if (!c) return;
-                  pinToCompare({ type: "country", id: c.id, label: c.name });
-                }}
-                onSelectCountry={(countryId) => handleSelectLocation({ type: "country", countryId })}
-                inline
-              />
-            )}
-          </div>
-
-          {/* Footer: Timeline + Pinned */}
-          <div className="shrink-0 border-t border-white/[0.06] p-3 space-y-3">
-            <TimeScrubber activeYear={activeYear} onSetYear={setActiveYear} />
-            {/* Pinned items */}
-            {pinned.length > 0 && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Pinned ({pinned.length})</span>
-                  <button
-                    onClick={() => setCompareOpen(true)}
-                    className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-accent/15 border border-accent/25 text-accent hover:bg-accent/25 transition"
-                  >
-                    Compare
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {pinned.map((p, i) => (
-                    <div key={`${p.type}:${p.id}`} className="flex items-center gap-1.5 bg-white/[0.04] border border-white/[0.08] rounded-lg px-2.5 py-1 text-xs text-slate-300">
-                      <span className="truncate max-w-[100px]">{p.label}</span>
-                      <button onClick={() => setPinned((prev) => prev.filter((_, idx) => idx !== i))} className="text-slate-600 hover:text-white transition">
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" /></svg>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-
-          {/* Attribution Footer */}
-          <div className="px-4 py-3 border-t border-white/[0.06] bg-slate-900/50 shrink-0 flex items-center justify-between">
-            <div className="text-[10px] text-slate-500">
-              Data sourced from UNODC & Small Arms Survey
+      {/* ── FOREGROUND: Floating Widgets ──────────────── */}
+      <div className="absolute inset-0 z-10 pointer-events-none">
+        
+        {/* Top Left: Branding & Search */}
+        <div className="absolute top-4 left-4 flex flex-col gap-3 pointer-events-auto w-[340px]">
+          {/* Branding Widget */}
+          <div className="glass-strong rounded-2xl border border-white/[0.08] p-3 flex items-center gap-3 shadow-glow transition-all hover:border-white/[0.12]">
+            <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0 shadow-inner">
+              <svg className="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
             </div>
-            <a href="https://github.com/JustFady" target="_blank" rel="noreferrer" className="text-[10px] font-medium text-accent hover:underline">
-              v1.0.0
-            </a>
+            <div>
+              <h1 className="text-sm font-bold text-white tracking-tight leading-none">Global Homicide Monitor</h1>
+              <p className="text-[9px] text-accent/80 font-semibold uppercase tracking-widest mt-1">Interactive Data Tool</p>
+            </div>
+          </div>
+
+          {/* Search Widget */}
+          <div className="shadow-2xl rounded-xl">
+            <SearchBar countries={countries} cities={cities} onSelectLocation={handleSelectLocation} />
           </div>
         </div>
-      )}
 
-      {/* ── Compare Modal (only thing that stays as a modal) ─── */}
+        {/* Top Center: Data Lenses */}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-auto hidden md:block">
+          <div className="glass-strong rounded-full border border-white/[0.08] p-1 flex items-center shadow-glow backdrop-blur-xl">
+            {[
+              { id: 'none', label: 'Standard', activeCls: 'bg-white/10 text-white shadow-sm border border-white/[0.05]' },
+              { id: 'homicide', label: 'Homicides', activeCls: 'bg-red-500/20 text-red-300 border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.15)]' },
+              { id: 'crime', label: 'Crime', activeCls: 'bg-amber-500/20 text-amber-300 border border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.15)]' },
+              { id: 'law', label: 'Laws', activeCls: 'bg-green-500/20 text-green-300 border border-green-500/20 shadow-[0_0_15px_rgba(34,197,94,0.15)]' },
+            ].map(lens => (
+              <button
+                key={lens.id}
+                onClick={() => setDataLens(lens.id)}
+                className={`px-4 py-1.5 rounded-full text-[11px] font-semibold tracking-wide transition-all duration-300 border border-transparent ${
+                  dataLens === lens.id ? lens.activeCls : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
+                }`}
+              >
+                {lens.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Top Right: Toggle Panel Button (if closed) */}
+        {!sidebarOpen && (
+          <div className="absolute top-4 right-4 pointer-events-auto">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="glass-strong rounded-xl px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider text-accent border border-white/[0.08] hover:bg-white/[0.05] hover:border-accent/30 transition-all shadow-glow flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M4 6h16M4 12h16M4 18h7" strokeLinecap="round" /></svg>
+              Open Panel
+            </button>
+          </div>
+        )}
+
+        {/* Right: Floating Sidebar */}
+        {sidebarOpen && (
+          <div className="absolute top-4 right-4 bottom-[90px] w-[380px] pointer-events-auto flex flex-col glass-strong rounded-2xl border border-white/[0.08] shadow-glow-strong overflow-hidden animate-slide-in-right backdrop-blur-2xl">
+            {/* Tab Bar */}
+            <div className="flex shrink-0 border-b border-white/[0.08] bg-slate-900/40">
+              <TabButton active={activeTab === "info"} icon={infoIcon} label="Info" onClick={() => setActiveTab("info")} />
+              <TabButton active={activeTab === "charts"} icon={chartIcon} label="Charts" onClick={() => setActiveTab("charts")} />
+              <TabButton active={activeTab === "scenarios"} icon={scenarioIcon} label="Lenses" onClick={() => setActiveTab("scenarios")} badge={scenarioCountryIds?.length || 0} />
+              {/* Close sidebar */}
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="px-3 flex items-center justify-center text-slate-500 hover:text-white hover:bg-rose-500/20 transition-colors border-l border-white/[0.08]"
+                title="Close panel"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" /></svg>
+              </button>
+            </div>
+
+            {/* Tab Content (scrollable) */}
+            <div className="flex-1 overflow-y-auto min-h-0 relative">
+              {activeTab === "info" && (
+                <>
+                  <Breadcrumb
+                    country={selectedCountry}
+                    state={selectedState}
+                    city={selectedCity}
+                    onSelectCountry={(id) => { setSelectedStateId(null); setSelectedCityId(null); setSelectedCountryId(id); }}
+                    onSelectState={(id) => { setSelectedCityId(null); setSelectedStateId(id); }}
+                  />
+                  {selectedCity ? (
+                    <CityPanel
+                      city={selectedCity}
+                      country={selectedCountry}
+                      state={selectedState}
+                      activeYear={activeYear}
+                      onDismiss={() => setSelectedCityId(null)}
+                      onPin={() => pinToCompare({ type: "city", id: selectedCity.id, label: `${selectedCity.name} (${selectedCountry.name})` })}
+                      onClosePanel={() => setSidebarOpen(false)}
+                    />
+                  ) : selectedStateId ? (
+                    <StatePanel
+                      stateData={selectedState}
+                      citiesForState={citiesForContext}
+                      activeYear={activeYear}
+                      onBack={() => { setSelectedStateId(null); setSelectedCityId(null); }}
+                      onPin={() => pinToCompare({ type: "state", id: selectedState.id, label: selectedState.name })}
+                      onViewCity={handleViewCity}
+                      onClosePanel={() => setSidebarOpen(false)}
+                    />
+                  ) : (
+                    <CountryPanel
+                      country={selectedCountry}
+                      citiesForCountry={citiesForContext}
+                      statesForCountry={statesForCountry}
+                      globalAvgKeyMetrics={globalAvgKeyMetrics}
+                      activeYear={activeYear}
+                      onPin={() => pinToCompare({ type: "country", id: selectedCountry.id, label: selectedCountry.name })}
+                      onViewCity={handleViewCity}
+                      onSelectState={handleSelectState}
+                      onClosePanel={() => setSidebarOpen(false)}
+                    />
+                  )}
+                </>
+              )}
+
+              {activeTab === "charts" && (
+                <ChartPanel
+                  countries={countries}
+                  cities={cities}
+                  onPin={(countryId) => {
+                    const c = countries.find((x) => x.id === countryId);
+                    if (!c) return;
+                    pinToCompare({ type: "country", id: c.id, label: c.name });
+                  }}
+                  inline
+                />
+              )}
+
+              {activeTab === "scenarios" && (
+                <ScenarioExplorer
+                  activeScenario={activeScenario}
+                  onChange={setActiveScenario}
+                  countries={countries}
+                  scenarioCountryIds={scenarioCountryIds}
+                  onPin={(countryId) => {
+                    const c = countries.find((x) => x.id === countryId);
+                    if (!c) return;
+                    pinToCompare({ type: "country", id: c.id, label: c.name });
+                  }}
+                  onSelectCountry={(countryId) => handleSelectLocation({ type: "country", countryId })}
+                  inline
+                />
+              )}
+            </div>
+
+            {/* Attribution Footer */}
+            <div className="px-4 py-2.5 border-t border-white/[0.08] bg-slate-900/60 shrink-0 flex items-center justify-between backdrop-blur-md">
+              <div className="text-[9px] font-semibold text-slate-500 tracking-wider uppercase">
+                Data: UNODC & Small Arms Survey
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Bottom Center: Time Scrubber */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-auto w-full max-w-2xl px-4 z-20">
+          <div className="glass-strong rounded-2xl border border-white/[0.08] p-3 shadow-glow-strong backdrop-blur-2xl">
+            <TimeScrubber activeYear={activeYear} onSetYear={setActiveYear} />
+          </div>
+        </div>
+
+        {/* Bottom Left: Pinned Items & Compare */}
+        {pinned.length > 0 && (
+          <div className="absolute bottom-6 left-4 pointer-events-auto w-[340px] z-20">
+            <div className="glass-strong rounded-2xl border border-white/[0.08] p-3 shadow-glow backdrop-blur-2xl">
+              <div className="flex items-center justify-between mb-2.5">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>
+                  Pinned ({pinned.length})
+                </span>
+                <button
+                  onClick={() => setCompareOpen(true)}
+                  className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-accent/20 border border-accent/30 text-accent hover:bg-accent/30 transition-all shadow-[0_0_10px_rgba(59,130,246,0.2)]"
+                >
+                  Compare All
+                </button>
+              </div>
+              <div className="flex flex-col gap-1.5 max-h-[120px] overflow-y-auto pr-1">
+                {pinned.map((p, i) => (
+                  <div key={`${p.type}:${p.id}`} className="flex items-center justify-between bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.05] rounded-lg px-2.5 py-1.5 text-xs text-slate-200 transition-colors group">
+                    <span className="truncate pr-2 font-medium">{p.label}</span>
+                    <button onClick={() => setPinned((prev) => prev.filter((_, idx) => idx !== i))} className="text-slate-500 hover:text-rose-400 transition-colors shrink-0 opacity-50 group-hover:opacity-100">
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" /></svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+      </div>
+
+      {/* ── Compare Modal ────────────────────────────────── */}
       {compareOpen && (
         <CompareTable
           pinned={pinned}
