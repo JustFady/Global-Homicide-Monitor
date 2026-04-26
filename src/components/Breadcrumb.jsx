@@ -8,7 +8,7 @@ export default function Breadcrumb({ country, state, city, onSelectCountry, onSe
 
   // Globe / root
   crumbs.push({
-    label: "🌍 Globe",
+    label: "Globe",
     onClick: null, // no action — we're always at globe level
     active: !country,
   });
