@@ -264,7 +264,7 @@ export default function App() {
             <div className="flex shrink-0 border-b border-white/[0.08] bg-slate-900/40">
               <TabButton active={activeTab === "info"} icon={infoIcon} label="Info" onClick={() => setActiveTab("info")} />
               <TabButton active={activeTab === "charts"} icon={chartIcon} label="Charts" onClick={() => setActiveTab("charts")} />
-              <TabButton active={activeTab === "scenarios"} icon={scenarioIcon} label="Lenses" onClick={() => setActiveTab("scenarios")} badge={scenarioCountryIds?.length || 0} />
+              <TabButton active={activeTab === "scenarios"} icon={scenarioIcon} label="Scenarios" onClick={() => setActiveTab("scenarios")} badge={scenarioCountryIds?.length || 0} />
               {/* Close sidebar */}
               <button
                 onClick={() => setSidebarOpen(false)}
