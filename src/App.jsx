@@ -215,29 +215,8 @@ export default function App() {
       {/* ── FOREGROUND: Floating Widgets ──────────────── */}
       <div className="absolute inset-0 z-10 pointer-events-none">
         
-        {/* Top Left: Branding & Search */}
-        <div className="absolute top-4 left-4 flex flex-col gap-3 pointer-events-auto w-[340px]">
-          {/* Branding Widget */}
-          <div className="glass-strong rounded-2xl border border-white/[0.08] p-3 flex items-center gap-3 shadow-glow transition-all hover:border-white/[0.12]">
-            <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0 shadow-inner">
-              <svg className="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <h1 className="text-sm font-bold text-white tracking-tight leading-none">Global Homicide Monitor</h1>
-              <p className="text-[9px] text-accent/80 font-semibold uppercase tracking-widest mt-1">Interactive Data Tool</p>
-            </div>
-          </div>
-
-          {/* Search Widget */}
-          <div className="shadow-2xl rounded-xl">
-            <SearchBar countries={countries} cities={cities} onSelectLocation={handleSelectLocation} />
-          </div>
-        </div>
-
-        {/* Top Center: Data Lenses */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-auto hidden md:block">
+        {/* Top Left: Data Lenses */}
+        <div className="absolute top-4 left-4 pointer-events-auto hidden md:block z-20">
           <div className="glass-strong rounded-full border border-white/[0.08] p-1 flex items-center shadow-glow backdrop-blur-xl">
             {[
               { id: 'none', label: 'Standard', activeCls: 'bg-white/10 text-white shadow-sm border border-white/[0.05]' },
@@ -255,6 +234,13 @@ export default function App() {
                 {lens.label}
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* Top Center: Search Bar */}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-auto w-full max-w-[400px] px-4 z-30">
+          <div className="shadow-glow rounded-xl">
+            <SearchBar countries={countries} cities={cities} onSelectLocation={handleSelectLocation} />
           </div>
         </div>
 
@@ -376,8 +362,8 @@ export default function App() {
         )}
 
         {/* Bottom Center: Time Scrubber */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-auto w-full max-w-2xl px-4 z-20">
-          <div className="glass-strong rounded-2xl border border-white/[0.08] p-3 shadow-glow-strong backdrop-blur-2xl">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-auto w-full max-w-[460px] px-4 z-20">
+          <div className="glass-strong rounded-2xl border border-white/[0.08] p-2.5 shadow-glow-strong backdrop-blur-2xl">
             <TimeScrubber activeYear={activeYear} onSetYear={setActiveYear} />
           </div>
         </div>
