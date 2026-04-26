@@ -1,4 +1,4 @@
-# Global Homicide Monitor 🌍
+# Global Homicide Monitor 
 
 A high-end, interactive analytical dashboard for visualizing global homicide rates, firearm violence, and safety statistics across 176 countries and 960+ cities.
 
