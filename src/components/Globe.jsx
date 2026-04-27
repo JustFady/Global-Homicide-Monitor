@@ -455,7 +455,7 @@ export default function Globe({
         )
         .labelAltitude(0.015)
         .labelResolution(2)
-        .labelIncludeDot((d) => d.type === "country");
+        .labelIncludeDot((d) => d.type === "country" || d.type === "state");
 
       globeRef.current = globe;
 
@@ -481,6 +481,57 @@ export default function Globe({
       try { el.innerHTML = ""; } catch {}
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Update Labels Dynamically (Countries, States, Oceans) ──
+  useEffect(() => {
+    if (!globeRef.current || !worldFeatures.length || !usFeatures.length) return;
+
+    const oceanLabels = [
+      { name: "Atlantic Ocean", lat: 15, lng: -35, type: "ocean" },
+      { name: "Pacific Ocean", lat: 0, lng: -155, type: "ocean" },
+      { name: "Indian Ocean", lat: -15, lng: 80, type: "ocean" },
+      { name: "Arctic Ocean", lat: 82, lng: 0, type: "ocean" },
+      { name: "Southern Ocean", lat: -65, lng: 0, type: "ocean" },
+    ];
+
+    const countryLabels = worldFeatures
+      .filter((f) => {
+        const iso3 = getFeatureISO3(f);
+        // Hide USA label if we are showing states
+        return !(iso3 === "USA" && selectedCountryId === "USA");
+      })
+      .map((f) => ({
+        name: getFeatureName(f),
+        lat: geoCentroid(f)[1],
+        lng: geoCentroid(f)[0],
+        type: "country",
+      }));
+
+    let labels = [...countryLabels, ...oceanLabels];
+
+    if (selectedCountryId === "USA") {
+      const stateLabels = usFeatures.map((f) => ({
+        name: getFeatureName(f),
+        lat: geoCentroid(f)[1],
+        lng: geoCentroid(f)[0],
+        type: "state",
+      }));
+      labels = [...labels, ...stateLabels];
+    }
+
+    globeRef.current
+      .labelsData(labels)
+      .labelSize((d) => {
+        if (d.type === "ocean") return 1.4;
+        if (d.type === "state") return 0.55;
+        return 0.75;
+      })
+      .labelColor((d) => {
+        if (d.type === "ocean") return "rgba(255, 255, 255, 0.45)";
+        if (d.type === "state") return "rgba(255, 255, 255, 0.7)";
+        return "rgba(255, 255, 255, 0.85)";
+      });
+  }, [selectedCountryId, worldFeatures, usFeatures]);
 
   // ── Update polygon styling on selection / scenario change / lens ──
   useEffect(() => {
