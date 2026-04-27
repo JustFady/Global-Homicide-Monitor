@@ -216,7 +216,7 @@ export default function App() {
       <div className="absolute inset-0 z-10 pointer-events-none">
         
         {/* Top Left: Data Lenses */}
-        <div className="absolute top-4 left-4 pointer-events-auto hidden md:block z-20">
+        <div className="absolute top-4 left-4 pointer-events-auto hidden lg:block z-20">
           <div className="glass-strong rounded-full border border-white/[0.08] p-1 flex items-center shadow-glow backdrop-blur-xl">
             {[
               { id: 'none', label: 'Standard', activeCls: 'bg-white/10 text-white shadow-sm border border-white/[0.05]' },
@@ -238,7 +238,7 @@ export default function App() {
         </div>
 
         {/* Top Center: Search Bar */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-auto w-full max-w-[calc(100%-2rem)] md:max-w-[500px] px-4 z-30">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-auto w-full max-w-[calc(100%-2rem)] md:max-w-[400px] lg:max-w-[500px] px-4 z-30">
           <div className="shadow-glow rounded-xl">
             <SearchBar countries={countries} cities={cities} onSelectLocation={handleSelectLocation} />
           </div>
@@ -357,7 +357,7 @@ export default function App() {
       )}
 
         {/* Bottom Left: Time Scrubber */}
-        <div className="absolute bottom-6 left-4 right-4 md:right-auto md:w-[340px] pointer-events-auto z-20">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 md:left-4 md:translate-x-0 w-[calc(100%-2rem)] md:w-[340px] pointer-events-auto z-20">
           <div className="glass-strong rounded-2xl border border-white/[0.08] p-2.5 shadow-glow-strong backdrop-blur-2xl">
             <TimeScrubber activeYear={activeYear} onSetYear={setActiveYear} />
           </div>
