@@ -427,6 +427,36 @@ export default function Globe({
           if (point?.id) onSelectCity(point.id);
         });
 
+      // ── Labels (Countries & Oceans) ──────────────────
+      const oceanLabels = [
+        { name: "Atlantic Ocean", lat: 15, lng: -35, type: "ocean" },
+        { name: "Pacific Ocean", lat: 0, lng: -155, type: "ocean" },
+        { name: "Indian Ocean", lat: -15, lng: 80, type: "ocean" },
+        { name: "Arctic Ocean", lat: 82, lng: 0, type: "ocean" },
+        { name: "Southern Ocean", lat: -65, lng: 0, type: "ocean" },
+      ];
+
+      const countryLabels = fc.features.map((f) => ({
+        name: getFeatureName(f),
+        lat: geoCentroid(f)[1],
+        lng: geoCentroid(f)[0],
+        type: "country",
+      }));
+
+      globe
+        .labelsData([...countryLabels, ...oceanLabels])
+        .labelLat((d) => d.lat)
+        .labelLng((d) => d.lng)
+        .labelText((d) => d.name)
+        .labelSize((d) => (d.type === "ocean" ? 1.4 : 0.75))
+        .labelDotRadius((d) => (d.type === "ocean" ? 0 : 0.3))
+        .labelColor((d) =>
+          d.type === "ocean" ? "rgba(255, 255, 255, 0.45)" : "rgba(255, 255, 255, 0.85)"
+        )
+        .labelAltitude(0.015)
+        .labelResolution(2)
+        .labelIncludeDot((d) => d.type === "country");
+
       globeRef.current = globe;
 
       // Initial view
