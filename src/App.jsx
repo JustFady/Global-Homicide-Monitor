@@ -215,8 +215,8 @@ export default function App() {
       {/* ── FOREGROUND: Floating Widgets ──────────────── */}
       <div className="absolute inset-0 z-10 pointer-events-none">
         
-        {/* Top Left: Data Lenses */}
-        <div className="absolute top-4 left-4 pointer-events-auto hidden lg:block z-20">
+        {/* Top Left: Data Lenses (Desktop only) */}
+        <div className="absolute top-4 left-4 pointer-events-auto hidden xl:block z-20">
           <div className="glass-strong rounded-full border border-white/[0.08] p-1 flex items-center shadow-glow backdrop-blur-xl">
             {[
               { id: 'none', label: 'Standard', activeCls: 'bg-white/10 text-white shadow-sm border border-white/[0.05]' },
@@ -337,19 +337,47 @@ export default function App() {
               )}
 
               {activeTab === "scenarios" && (
-                <ScenarioExplorer
-                  activeScenario={activeScenario}
-                  onChange={setActiveScenario}
-                  countries={countries}
-                  scenarioCountryIds={scenarioCountryIds}
-                  onPin={(countryId) => {
-                    const c = countries.find((x) => x.id === countryId);
-                    if (!c) return;
-                    pinToCompare({ type: "country", id: c.id, label: c.name });
-                  }}
-                  onSelectCountry={(countryId) => handleSelectLocation({ type: "country", countryId })}
-                  inline
-                />
+                <>
+                  {/* Mobile/Tablet Data Lenses inside Sidebar */}
+                  <div className="xl:hidden mb-6">
+                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 px-1">
+                      Data Lenses
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { id: 'none', label: 'Standard', activeCls: 'bg-white/10 text-white border-white/20' },
+                        { id: 'homicide', label: 'Homicides', activeCls: 'bg-red-500/20 text-red-300 border-red-500/30' },
+                        { id: 'crime', label: 'Crime', activeCls: 'bg-amber-500/20 text-amber-300 border-amber-500/30' },
+                        { id: 'law', label: 'Laws', activeCls: 'bg-green-500/20 text-green-300 border-green-500/30' },
+                      ].map(lens => (
+                        <button
+                          key={lens.id}
+                          onClick={() => setDataLens(lens.id)}
+                          className={`px-3 py-2.5 rounded-xl text-[11px] font-semibold transition-all border ${
+                            dataLens === lens.id ? lens.activeCls : 'bg-white/[0.03] text-slate-400 border-white/[0.05] hover:bg-white/[0.06]'
+                          }`}
+                        >
+                          {lens.label}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="h-px bg-white/[0.08] my-6" />
+                  </div>
+
+                  <ScenarioExplorer
+                    activeScenario={activeScenario}
+                    onChange={setActiveScenario}
+                    countries={countries}
+                    scenarioCountryIds={scenarioCountryIds}
+                    onPin={(countryId) => {
+                      const c = countries.find((x) => x.id === countryId);
+                      if (!c) return;
+                      pinToCompare({ type: "country", id: c.id, label: c.name });
+                    }}
+                    onSelectCountry={(countryId) => handleSelectLocation({ type: "country", countryId })}
+                    inline
+                  />
+                </>
               )}
             </div>
           </div>
