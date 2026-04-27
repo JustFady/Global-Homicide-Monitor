@@ -238,7 +238,7 @@ export default function App() {
         </div>
 
         {/* Top Center: Search Bar */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-auto w-full max-w-[500px] px-4 z-30">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-auto w-full max-w-[calc(100%-2rem)] md:max-w-[500px] px-4 z-30">
           <div className="shadow-glow rounded-xl">
             <SearchBar countries={countries} cities={cities} onSelectLocation={handleSelectLocation} />
           </div>
@@ -257,9 +257,10 @@ export default function App() {
           </div>
         )}
 
-        {/* Right: Floating Sidebar */}
+        {/* Right: Floating Sidebar / Info Panel */}
         {sidebarOpen && (
-          <div className="absolute top-4 right-4 bottom-[90px] w-[380px] pointer-events-auto flex flex-col glass-strong rounded-2xl border border-white/[0.08] shadow-glow-strong overflow-hidden animate-slide-in-right backdrop-blur-2xl">
+          <div className="absolute inset-0 md:inset-auto md:top-4 md:right-4 md:bottom-[90px] md:w-[380px] pointer-events-auto z-40 animate-slide-in-right">
+            <div className="h-full glass-strong md:rounded-2xl border-none md:border md:border-white/[0.08] shadow-glow flex flex-col overflow-hidden backdrop-blur-2xl">
             {/* Tab Bar */}
             <div className="flex shrink-0 border-b border-white/[0.08] bg-slate-900/40">
               <TabButton active={activeTab === "info"} icon={infoIcon} label="Info" onClick={() => setActiveTab("info")} />
@@ -352,10 +353,11 @@ export default function App() {
               )}
             </div>
           </div>
-        )}
+        </div>
+      )}
 
         {/* Bottom Left: Time Scrubber */}
-        <div className="absolute bottom-6 left-4 pointer-events-auto w-[340px] z-20">
+        <div className="absolute bottom-6 left-4 right-4 md:right-auto md:w-[340px] pointer-events-auto z-20">
           <div className="glass-strong rounded-2xl border border-white/[0.08] p-2.5 shadow-glow-strong backdrop-blur-2xl">
             <TimeScrubber activeYear={activeYear} onSetYear={setActiveYear} />
           </div>
@@ -363,7 +365,7 @@ export default function App() {
 
         {/* Bottom Left (Above Timeline): Pinned Items & Compare */}
         {pinned.length > 0 && (
-          <div className="absolute bottom-[100px] left-4 pointer-events-auto w-[340px] z-20">
+          <div className="absolute bottom-[100px] left-4 right-4 md:right-auto md:w-[340px] pointer-events-auto z-20">
             <div className="glass-strong rounded-2xl border border-white/[0.08] p-3 shadow-glow backdrop-blur-2xl">
               <div className="flex items-center justify-between mb-2.5">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
@@ -392,7 +394,7 @@ export default function App() {
         )}
 
         {/* Bottom Right: Links & Attribution */}
-        <div className="absolute bottom-6 right-4 pointer-events-auto z-20">
+        <div className="absolute bottom-6 right-4 pointer-events-auto z-20 hidden md:block">
           <div className="glass-strong rounded-xl border border-white/[0.08] px-3 py-2 shadow-glow backdrop-blur-2xl flex items-center gap-3.5 text-[10px] font-medium text-slate-500">
             <a href="https://github.com/JustFady/Global-Homicide-Monitor" target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-white transition-colors group">
               <svg className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
