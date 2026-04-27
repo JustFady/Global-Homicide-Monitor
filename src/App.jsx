@@ -246,13 +246,13 @@ export default function App() {
 
         {/* Top Right: Toggle Panel Button (if closed) */}
         {!sidebarOpen && (
-          <div className="absolute top-4 right-4 pointer-events-auto">
+          <div className="absolute top-4 right-4 pointer-events-auto z-40">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="glass-strong rounded-xl px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider text-accent border border-white/[0.08] hover:bg-white/[0.05] hover:border-accent/30 transition-all shadow-glow flex items-center gap-2"
+              className="glass-strong rounded-xl px-3 py-2 md:px-4 md:py-2.5 text-[11px] font-bold uppercase tracking-wider text-accent border border-white/[0.08] hover:bg-white/[0.05] hover:border-accent/30 transition-all shadow-glow flex items-center gap-2"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M4 6h16M4 12h16M4 18h7" strokeLinecap="round" /></svg>
-              Open Panel
+              <span className="hidden xs:inline">Open Panel</span>
             </button>
           </div>
         )}
