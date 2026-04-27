@@ -497,8 +497,11 @@ export default function Globe({
     const countryLabels = worldFeatures
       .filter((f) => {
         const iso3 = getFeatureISO3(f);
-        // Hide USA label if we are showing states
-        return !(iso3 === "USA" && selectedCountryId === "USA");
+        const fName = getFeatureName(f);
+        const id = iso3 && countryIdSet.has(iso3) ? iso3 : fName ? countryByName.get(norm(fName)) : null;
+        
+        // Hide the label for whichever country is currently selected
+        return id !== selectedCountryId;
       })
       .map((f) => ({
         name: getFeatureName(f),
